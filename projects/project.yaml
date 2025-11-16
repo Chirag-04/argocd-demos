@@ -1,0 +1,51 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: declarative-project-demo-app
+  namespace: argocd # where AppProject CRD is stored
+spec:
+  description: This is a demo project for deploying argocd project in declarative way
+
+  sourceRepos:
+  - 'https://github.com/Chirag-04/argocd-demos'
+  - '*'
+
+  destinations:
+  - namespace: 'default'
+    server: 'https://172.19.0.4:6443'
+  - namespace: '*'
+    server: '*'
+
+  sourceNamespaces:
+  - argocd # where Application CRD objects can be stored
+  - demo-ns
+
+  clusterResourceWhitelist:
+  - group: ''
+    kind: Namespace
+  - group: 'rbac.authorization.k8s.io'
+    kind: ClusterRole
+
+  namespaceResourceWhitelist:
+  - group: '*'
+    kind: '*'
+
+  roles:
+  # Developer role - limited permissions
+  - name: developer
+    description: Developer role with limited permission
+    policies:
+    - p, proj:declarative-project-demo-app:developer, applications, get, declarative-project-demo-app/*, allow
+    - p, proj:declarative-project-demo-app:developer, applications, sync, declarative-project-demo-app/*, allow
+    groups:
+    - dev-team
+
+  # Admin role - full permissions
+  - name: admin
+    description: Admin role with full permissions
+    policies:
+    - p, proj:declarative-project-demo-app:admin, applications, *, declarative-project-demo-app/*, allow
+    - p, proj:declarative-project-demo-app:admin, repositories, *, declarative-project-demo-app/*, allow
+    groups:
+    - devops-team
+    - sre-team
