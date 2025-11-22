@@ -4,13 +4,13 @@ metadata:
   name: online-shop-app
   namespace: argocd
 spec:
-  project: demo-project
+  project: declarative-project-demo-app
   source:
     repoURL: https://github.com/Chirag-04/argocd-demos    # Replace it with your forked repo
     targetRevision: main
     path: declarative_approach/online_shop
   destination:
-    server: https://172.19.0.4:6443   # Replace with your Cluster Url, To get run: `argocd cluster list`
+    server: https://kubernetes.default.svc  # Replace with your Cluster Url, To get run: `argocd cluster list`
     namespace: default
   syncPolicy:
     automated:
