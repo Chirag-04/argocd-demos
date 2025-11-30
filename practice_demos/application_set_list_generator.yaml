@@ -1,0 +1,32 @@
+patapiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: demo-list
+  namespace: argocd
+spec:
+  # The list generator lets you enumerate a static set of elements (apps).
+  generators:
+    - list:
+        elements:
+          - app: nginx
+            path: ui_approach/nginx     # path in repo for this app
+          - app: online-shop
+            path: multicluster/online-shop   # path in repo for this app
+          - app: chaiapp
+            path: applicationsets/chai-app      # path in repo for this app
+  template:
+    metadata:
+      name: '{{app}}-list'
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/Chirag-04/argocd-demos
+        targetRevision: main
+        path: '{{path}}'                # resolved from element
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: default
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
